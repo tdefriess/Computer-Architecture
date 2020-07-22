@@ -2,6 +2,9 @@
 
 import sys
 
+HLT = 0b00000001
+LDI = 0b10000010
+PRN = 0b01000111
 class CPU:
     """Main CPU class."""
 
@@ -10,27 +13,33 @@ class CPU:
         self.reg = [0] * 8 # Registers
         self.ram = [0] * 256 # RAM
         self.pc = 0
+        self.running = True
+        self.branch_table = {}
+        self.branch_table[HLT] = self.handle_HLT
 
-    def load(self):
+    def load(self, program):
         """Load a program into memory."""
 
         address = 0
 
         # For now, we've just hardcoded a program:
 
-        program = [
-            # From print8.ls8
-            0b10000010, # LDI R0,8
-            0b00000000,
-            0b00001000,
-            0b01000111, # PRN R0
-            0b00000000,
-            0b00000001, # HLT
-        ]
+        # program = [
+        #     # From print8.ls8
+        #     0b10000010, # LDI R0,8
+        #     0b00000000,
+        #     0b00001000,
+        #     0b01000111, # PRN R0
+        #     0b00000000,
+        #     0b00000001, # HLT
+        # ]
 
         for instruction in program:
             self.ram[address] = instruction
             address += 1
+
+    def handle_HLT(self):
+        return False
     
     def ram_read(self, MAR):
         return self.ram[MAR]
@@ -70,9 +79,6 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
-        HLT = 0b00000001
-        LDI = 0b10000010
-        PRN = 0b01000111
         # self.trace()
         running = True
         while running:
@@ -82,7 +88,8 @@ class CPU:
 
             if IR == HLT:
                 # self.trace()
-                running = False
+                # running = False
+                running = self.handle_HLT()
 
             if IR == LDI:
                 # self.trace()
