@@ -79,7 +79,7 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
-        # self.trace()
+        self.trace()
         running = True
         while running:
             IR = self.ram_read(self.pc)
@@ -87,17 +87,18 @@ class CPU:
             operand_b = self.ram_read(self.pc + 2)
 
             if IR == HLT:
-                # self.trace()
+                self.trace()
                 # running = False
                 running = self.handle_HLT()
 
             if IR == LDI:
-                # self.trace()
-                self.ram_write(operand_b, operand_a)
+                self.trace()
+                # self.ram_write(operand_b, operand_a)
+                self.reg[operand_a] = operand_b
                 self.pc += 2
 
             if IR == PRN:
-                # self.trace()
-                print(self.ram_read(operand_a))
+                self.trace()
+                print(self.reg[operand_a])
 
             self.pc += 1
