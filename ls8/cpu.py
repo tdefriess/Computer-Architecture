@@ -97,13 +97,13 @@ class CPU:
                 # self.trace()
                 # self.ram_write(operand_b, operand_a)
                 self.reg[operand_a] = operand_b
-                self.pc += 2
+                self.pc += IR >> 6
 
             if IR == MUL:
                 # self.trace()
-                self.reg[operand_a] = self.reg[operand_a] * self.reg[operand_b]
+                self.reg[operand_a] *= self.reg[operand_b]
                 # self.trace()
-                self.pc += 2
+                self.pc += IR >> 6
 
             if IR == PRN:
                 # self.trace()
