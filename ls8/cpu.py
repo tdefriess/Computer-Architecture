@@ -36,7 +36,8 @@ class CPU:
         # ]
 
         for instruction in program:
-            self.ram[address] = instruction
+            # self.ram[address] = instruction
+            self.ram_write(instruction, address)
             address += 1
 
     def handle_HLT(self):
