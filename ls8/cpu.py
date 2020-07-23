@@ -6,14 +6,19 @@ HLT = 0b00000001
 LDI = 0b10000010
 PRN = 0b01000111
 MUL = 0b10100010
+ADD = 0b10101000
+PUSH = 0b01000101
+POP = 0b01000110
 class CPU:
     """Main CPU class."""
 
     def __init__(self):
         """Construct a new CPU."""
         self.reg = [0] * 8 # Registers
+        self.reg[7] = 0xF4
         self.ram = [0] * 256 # RAM
         self.pc = 0
+        self.fl = 0
         self.running = True
         self.branch_table = {}
         self.branch_table[HLT] = self.handle_HLT
@@ -98,6 +103,9 @@ class CPU:
                 # self.ram_write(operand_b, operand_a)
                 self.reg[operand_a] = operand_b
 
+            if IR == ADD:
+                self.reg[operand_a] += self.reg[operand_b]
+
             if IR == MUL:
                 # self.trace()
                 self.reg[operand_a] *= self.reg[operand_b]
@@ -106,5 +114,16 @@ class CPU:
             if IR == PRN:
                 # self.trace()
                 print(self.reg[operand_a])
+
+            if IR == PUSH:
+                self.reg[7] -= 1
+                value = self.reg[operand_a]
+
+                self.ram_write(value, self.reg[7])
+
+            if IR == POP:
+                value = self.ram_read(self.reg[7])
+                self.reg[operand_a] = value
+                self.reg[7] += 1
 
             self.pc += (IR >> 6) + 1
