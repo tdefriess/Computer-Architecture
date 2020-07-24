@@ -74,6 +74,14 @@ class CPU:
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
         #elif op == "SUB": etc
+        if op == CMP:
+            if self.reg[reg_a] < self.reg[reg_b]:
+                self.fl = 0b00000100
+            elif self.reg[reg_a] > self.reg[reg_b]:
+                self.fl = 0b00000010
+            else:
+                self.fl = 0b00000001
+
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -105,6 +113,9 @@ class CPU:
             IR = self.ram_read(self.pc)
             operand_a = self.ram_read(self.pc + 1)
             operand_b = self.ram_read(self.pc + 2)
+
+            if IR & 0b00100000:
+                self.alu(IR, operand_a, operand_b)
 
             if IR == HLT:
                 # self.trace()
@@ -154,13 +165,13 @@ class CPU:
                 self.pc = self.reg[operand_a]
                 continue
 
-            if IR == CMP:
-                if self.reg[operand_a] < self.reg[operand_b]:
-                    self.fl = 0b00000100
-                elif self.reg[operand_a] > self.reg[operand_b]:
-                    self.fl = 0b00000010
-                else:
-                    self.fl = 0b00000001
+            # if IR == CMP:
+            #     if self.reg[operand_a] < self.reg[operand_b]:
+            #         self.fl = 0b00000100
+            #     elif self.reg[operand_a] > self.reg[operand_b]:
+            #         self.fl = 0b00000010
+            #     else:
+            #         self.fl = 0b00000001
 
             if IR == JEQ:
                 if self.fl & 0b00000001:
