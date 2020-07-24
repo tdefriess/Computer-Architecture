@@ -87,6 +87,31 @@ class CPU:
             else:
                 self.fl = 0b00000001
 
+        elif op == AND:
+            self.reg[reg_a] &= self.reg[reg_b]
+
+        elif op == OR:
+            self.reg[reg_a] |= self.reg[reg_b]
+
+        elif op == XOR:
+            self.reg[reg_a] ^= self.reg[reg_b]
+        
+        elif op == NOT:
+            self.reg[reg_a] = ~self.reg[reg_a]
+
+        elif op == SHL:
+            self.reg[reg_a] <<= self.reg[reg_b]
+            self.reg[reg_a] %= 0xFF
+
+        elif op == SHR:
+            self.reg[reg_a] >>= self.reg[reg_b]
+
+        elif op == MOD:
+            if self.reg[reg_b] != 0:
+                self.reg[reg_a] %= self.reg[reg_b]
+            else:
+                raise Exception('Cannot divide by zero')
+
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -132,14 +157,6 @@ class CPU:
                 # self.ram_write(operand_b, operand_a)
                 self.reg[operand_a] = operand_b
 
-            # if IR == ADD:
-            #     self.reg[operand_a] += self.reg[operand_b]
-
-            # if IR == MUL:
-            #     # self.trace()
-            #     self.reg[operand_a] *= self.reg[operand_b]
-            #     # self.trace()
-
             if IR == PRN:
                 # self.trace()
                 print(self.reg[operand_a])
@@ -170,14 +187,6 @@ class CPU:
                 self.pc = self.reg[operand_a]
                 continue
 
-            # if IR == CMP:
-            #     if self.reg[operand_a] < self.reg[operand_b]:
-            #         self.fl = 0b00000100
-            #     elif self.reg[operand_a] > self.reg[operand_b]:
-            #         self.fl = 0b00000010
-            #     else:
-            #         self.fl = 0b00000001
-
             if IR == JEQ:
                 if self.fl & 0b00000001:
                     self.pc = self.reg[operand_a]
@@ -187,30 +196,5 @@ class CPU:
                 if not (self.fl & 0b00000001):
                     self.pc = self.reg[operand_a]
                     continue
-
-            if IR == AND:
-                self.reg[operand_a] &= self.reg[operand_b]
-
-            if IR == OR:
-                self.reg[operand_a] |= self.reg[operand_b]
-
-            if IR == XOR:
-                self.reg[operand_a] ^= self.reg[operand_b]
-
-            if IR == NOT:
-                self.reg[operand_a] = ~self.reg[operand_a]
-
-            if IR == SHL:
-                self.reg[operand_a] <<= self.reg[operand_b]
-                self.reg[operand_a] %= 0xFF
-
-            if IR == SHR:
-                self.reg[operand_a] >>= self.reg[operand_b]
-
-            if IR == MOD:
-                if self.reg[operand_b] != 0:
-                    self.reg[operand_a] %= self.reg[operand_b]
-                else:
-                    raise Exception('Cannot divide by zero')
 
             self.pc += (IR >> 6) + 1
