@@ -15,6 +15,13 @@ CMP = 0b10100111
 JMP = 0b01010100
 JEQ = 0b01010101
 JNE = 0b01010110
+AND = 0b10101000
+OR = 0b10101010
+XOR = 0b10101011
+NOT = 0b01101001
+SHL = 0b10101100
+SHR = 0b10101101
+MOD = 0b10100100
 class CPU:
     """Main CPU class."""
 
@@ -164,5 +171,31 @@ class CPU:
                 if not (self.fl & 0b00000001):
                     self.pc = self.reg[operand_a]
                     continue
+
+            if IR == AND:
+                self.reg[operand_a] &= self.reg[operand_b]
+
+            if IR == OR:
+                self.reg[operand_a] |= self.reg[operand_b]
+
+            if IR == XOR:
+                self.reg[operand_a] ^= self.reg[operand_b]
+
+            if IR == NOT:
+                self.reg[operand_a] = ~self.reg[operand_a]
+
+            if IR == SHL:
+                self.reg[operand_a] <<= self.reg[operand_b]
+                self.reg[operand_a] %= 0xFF
+
+            if IR == SHR:
+                self.reg[operand_a] >>= self.reg[operand_b]
+
+            if IR == MOD:
+                if self.reg[operand_b] !== 0:
+                    self.reg[operand_a] %= self.reg[operand_b]
+                else:
+                    raise Exception('Cannot divide by zero')
+                    running = self.handle_HLT()
 
             self.pc += (IR >> 6) + 1
