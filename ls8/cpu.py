@@ -147,54 +147,59 @@ class CPU:
             if IR & 0b00100000:
                 self.alu(IR, operand_a, operand_b)
 
+            elif IR & 0b00010000: # If operation sets the PC.
+
+                if IR == CALL:
+                    self.reg[7] -= 1
+                    self.ram_write(self.pc + 2, self.reg[7])
+                    self.pc = self.reg[operand_a]
+                    continue
+
+                elif IR == RET:
+                    self.pc = self.ram_read(self.reg[7])
+                    self.reg[7] += 1
+                    continue
+
+                elif IR == JMP:
+                    self.pc = self.reg[operand_a]
+                    continue
+
+                elif IR == JEQ:
+                    if self.fl & 0b00000001:
+                        self.pc = self.reg[operand_a]
+                        continue
+                
+                elif IR == JNE:
+                    if not (self.fl & 0b00000001):
+                        self.pc = self.reg[operand_a]
+                        continue
+
+                else:
+                    raise Exception('Unsupported jump operation')
+
             if IR == HLT:
                 # self.trace()
                 # running = False
                 running = self.handle_HLT()
 
-            if IR == LDI:
+            elif IR == LDI:
                 # self.trace()
                 # self.ram_write(operand_b, operand_a)
                 self.reg[operand_a] = operand_b
 
-            if IR == PRN:
+            elif IR == PRN:
                 # self.trace()
                 print(self.reg[operand_a])
 
-            if IR == PUSH:
+            elif IR == PUSH:
                 self.reg[7] -= 1
                 value = self.reg[operand_a]
 
                 self.ram_write(value, self.reg[7])
 
-            if IR == POP:
+            elif IR == POP:
                 value = self.ram_read(self.reg[7])
                 self.reg[operand_a] = value
                 self.reg[7] += 1
-
-            if IR == CALL:
-                self.reg[7] -= 1
-                self.ram_write(self.pc + 2, self.reg[7])
-                self.pc = self.reg[operand_a]
-                continue
-
-            if IR == RET:
-                self.pc = self.ram_read(self.reg[7])
-                self.reg[7] += 1
-                continue
-
-            if IR == JMP:
-                self.pc = self.reg[operand_a]
-                continue
-
-            if IR == JEQ:
-                if self.fl & 0b00000001:
-                    self.pc = self.reg[operand_a]
-                    continue
-            
-            if IR == JNE:
-                if not (self.fl & 0b00000001):
-                    self.pc = self.reg[operand_a]
-                    continue
 
             self.pc += (IR >> 6) + 1
