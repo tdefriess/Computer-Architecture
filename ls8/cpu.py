@@ -192,10 +192,9 @@ class CPU:
                 self.reg[operand_a] >>= self.reg[operand_b]
 
             if IR == MOD:
-                if self.reg[operand_b] !== 0:
+                if self.reg[operand_b] is not 0:
                     self.reg[operand_a] %= self.reg[operand_b]
                 else:
                     raise Exception('Cannot divide by zero')
-                    running = self.handle_HLT()
 
             self.pc += (IR >> 6) + 1
