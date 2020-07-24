@@ -2,26 +2,30 @@
 
 import sys
 
-HLT = 0b00000001
-LDI = 0b10000010
-PRN = 0b01000111
-MUL = 0b10100010
-ADD = 0b10100000
+HLT =  0b00000001
+LDI =  0b10000010
+LD =   0b10000011
+PRN =  0b01000111
+MUL =  0b10100010
+ADD =  0b10100000
 PUSH = 0b01000101
-POP = 0b01000110
+POP =  0b01000110
 CALL = 0b01010000
-RET = 0b00010001
-CMP = 0b10100111
-JMP = 0b01010100
-JEQ = 0b01010101
-JNE = 0b01010110
-AND = 0b10101000
-OR = 0b10101010
-XOR = 0b10101011
-NOT = 0b01101001
-SHL = 0b10101100
-SHR = 0b10101101
-MOD = 0b10100100
+RET =  0b00010001
+CMP =  0b10100111
+JMP =  0b01010100
+JEQ =  0b01010101
+JNE =  0b01010110
+AND =  0b10101000
+OR =   0b10101010
+XOR =  0b10101011
+NOT =  0b01101001
+SHL =  0b10101100
+SHR =  0b10101101
+MOD =  0b10100100
+INC =  0b01100101
+DEC =  0b01100110
+PRA =  0b01001000
 class CPU:
     """Main CPU class."""
 
@@ -78,6 +82,12 @@ class CPU:
         elif op == MUL:
             self.reg[reg_a] *= self.reg[reg_b]
             self.reg[reg_a] %= 0xFF
+
+        elif op == INC:
+            self.reg[reg_a] += 1
+
+        elif op == DEC:
+            self.reg[reg_a] -= 1
 
         elif op == CMP:
             if self.reg[reg_a] < self.reg[reg_b]:
@@ -137,7 +147,6 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
-        # self.trace()
         running = True
         while running:
             IR = self.ram_read(self.pc)
@@ -178,18 +187,21 @@ class CPU:
                     raise Exception('Unsupported jump operation')
 
             if IR == HLT:
-                # self.trace()
                 # running = False
                 running = self.handle_HLT()
 
             elif IR == LDI:
-                # self.trace()
-                # self.ram_write(operand_b, operand_a)
                 self.reg[operand_a] = operand_b
 
+            elif IR == LD:
+                self.reg[operand_a] = self.ram_read(self.reg[operand_b])
+
             elif IR == PRN:
-                # self.trace()
                 print(self.reg[operand_a])
+
+            elif IR == PRA:
+                print(chr(self.reg[operand_a]))
+                # self.trace()
 
             elif IR == PUSH:
                 self.reg[7] -= 1
