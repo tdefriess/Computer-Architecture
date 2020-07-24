@@ -71,10 +71,15 @@ class CPU:
     def alu(self, op, reg_a, reg_b):
         """ALU operations."""
 
-        if op == "ADD":
+        if op == ADD:
             self.reg[reg_a] += self.reg[reg_b]
-        #elif op == "SUB": etc
-        if op == CMP:
+            self.reg[reg_a] %= 0xFF
+
+        elif op == MUL:
+            self.reg[reg_a] *= self.reg[reg_b]
+            self.reg[reg_a] %= 0xFF
+
+        elif op == CMP:
             if self.reg[reg_a] < self.reg[reg_b]:
                 self.fl = 0b00000100
             elif self.reg[reg_a] > self.reg[reg_b]:
@@ -127,13 +132,13 @@ class CPU:
                 # self.ram_write(operand_b, operand_a)
                 self.reg[operand_a] = operand_b
 
-            if IR == ADD:
-                self.reg[operand_a] += self.reg[operand_b]
+            # if IR == ADD:
+            #     self.reg[operand_a] += self.reg[operand_b]
 
-            if IR == MUL:
-                # self.trace()
-                self.reg[operand_a] *= self.reg[operand_b]
-                # self.trace()
+            # if IR == MUL:
+            #     # self.trace()
+            #     self.reg[operand_a] *= self.reg[operand_b]
+            #     # self.trace()
 
             if IR == PRN:
                 # self.trace()
@@ -203,7 +208,7 @@ class CPU:
                 self.reg[operand_a] >>= self.reg[operand_b]
 
             if IR == MOD:
-                if self.reg[operand_b] is not 0:
+                if self.reg[operand_b] != 0:
                     self.reg[operand_a] %= self.reg[operand_b]
                 else:
                     raise Exception('Cannot divide by zero')
