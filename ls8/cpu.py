@@ -6,9 +6,11 @@ HLT = 0b00000001
 LDI = 0b10000010
 PRN = 0b01000111
 MUL = 0b10100010
-ADD = 0b10101000
+ADD = 0b10100000
 PUSH = 0b01000101
 POP = 0b01000110
+CALL = 0b01010000
+RET = 0b00010001
 class CPU:
     """Main CPU class."""
 
@@ -125,5 +127,16 @@ class CPU:
                 value = self.ram_read(self.reg[7])
                 self.reg[operand_a] = value
                 self.reg[7] += 1
+
+            if IR == CALL:
+                self.reg[7] -= 1
+                self.ram_write(self.pc + 2, self.reg[7])
+                self.pc = self.reg[operand_a]
+                continue
+
+            if IR == RET:
+                self.pc = self.ram_read(self.reg[7])
+                self.reg[7] += 1
+                continue
 
             self.pc += (IR >> 6) + 1
